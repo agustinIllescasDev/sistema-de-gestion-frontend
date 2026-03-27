@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  /* 1. Fondos y Superficies */
+  --color-stitch-bg: #0f172a;
+  --color-stitch-sidebar: #1e293b;
+  --color-stitch-card: #1e293b;
+
+  /* 2. Colores de Identidad */
+  --color-stitch-primary: #38bdf8;
+  --color-stitch-primary-hover: #0ea5e9;
+
+  /* 3. Estados de Negocio */
+  --color-stitch-available: #22c55e;
+  --color-stitch-sold: #ef4444;
+  --color-stitch-pending: #f59e0b;
+
+  /* 4. Textos y Bordes */
+  --color-stitch-text-main: #f8fafc;
+  --color-stitch-text-muted: #94a3b8;
+  --color-stitch-border: #334155;
+}
