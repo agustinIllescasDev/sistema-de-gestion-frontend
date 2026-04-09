@@ -5,4 +5,5 @@ export interface ParametrosPaginacion {
   search?: string;
   pagina: number;
   limite: number;
+  categoria?: number;
 }

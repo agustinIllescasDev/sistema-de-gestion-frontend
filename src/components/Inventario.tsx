@@ -6,6 +6,7 @@ import type { Articulo } from '../types/articulo.type';
 import { Link } from 'react-router-dom';
 import { IMAGES_URL } from '../utils/constants.ts';
 import type { EstadoArticulo } from '../types/estado-articulo.type';
+import CategoriasService from '../services/categorias.service.ts';
 
 const Inventario = () => {
   const { searchTerm } = useSearch();
@@ -14,6 +15,9 @@ const Inventario = () => {
   const [cargando, setCargando] = useState<boolean>(false);
   const [pagina, setPagina] = useState(1);
   const [totalArticulos, setTotalArticulos] = useState(0);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] =
+    useState<string>('');
+
   const limite = 12;
 
   const [filtroEstado, setFiltroEstado] =
@@ -33,6 +37,11 @@ const Inventario = () => {
       return;
     }
 
+    // 
+    useEffect(() => {
+      const categorias = CategoriasService.obtenerTodas();
+    }, []);
+
     const obtenerArticulos = async () => {
       setCargando(true);
       try {
@@ -41,6 +50,9 @@ const Inventario = () => {
           search: debouncedTerm,
           pagina: pagina,
           limite: limite,
+          categoria: categoriaSeleccionada
+            ? parseInt(categoriaSeleccionada)
+            : undefined,
         });
         setArticulos(res.data);
         setTotalArticulos(res.meta?.total || res.total || 0);
