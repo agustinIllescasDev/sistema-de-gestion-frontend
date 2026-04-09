@@ -37,7 +37,7 @@ const Inventario = () => {
       return;
     }
 
-    // 
+    //
     useEffect(() => {
       const categorias = CategoriasService.obtenerTodas();
     }, []);
