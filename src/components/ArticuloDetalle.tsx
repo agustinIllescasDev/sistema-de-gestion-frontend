@@ -1,5 +1,3 @@
-//ArticuloDetalle.tsx
-
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import ArticulosService from '../services/articulos.service';
@@ -9,6 +7,7 @@ import { Alertas } from '../utils/alerts';
 
 const ArticuloDetalle = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [articulo, setArticulo] = useState<Articulo | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -30,8 +29,6 @@ const ArticuloDetalle = () => {
     cargarDatos();
   }, [id]);
 
-  const navigate = useNavigate();
-
   const handleEliminar = async () => {
     const confirmacion = await Alertas.confirmar(
       '¿Estás seguro?',
@@ -40,9 +37,9 @@ const ArticuloDetalle = () => {
 
     if (confirmacion.isConfirmed) {
       try {
-        await ArticulosService.eliminarArticulo(Number(id)); // Asumo que este método existe en tu service
+        await ArticulosService.eliminarArticulo(Number(id));
         await Alertas.exito('Eliminado', 'El artículo ha sido eliminado.');
-        navigate('/'); // Volvemos al inventario
+        navigate('/');
       } catch (error) {
         console.error('Error al eliminar:', error);
         Alertas.error('Error', 'No se pudo eliminar el artículo.');
@@ -51,7 +48,6 @@ const ArticuloDetalle = () => {
   };
 
   const handleVender = async () => {
-    // 1. Preguntar al usuario
     const confirmacion = await Alertas.confirmar(
       '¿Confirmar venta?',
       'El estado del artículo pasará a ser VENDIDO.',
@@ -59,17 +55,11 @@ const ArticuloDetalle = () => {
 
     if (confirmacion.isConfirmed) {
       try {
-        // 2. Llamar al backend
         await ArticulosService.venderArticulo(Number(id));
-
-        // 3. Mostrar éxito
         await Alertas.exito(
           '¡Vendido!',
           'El artículo se actualizó correctamente.',
         );
-
-        // 4. Refrescar los datos localmente para que cambie el "badge" de estado
-        // Podrías usar navigate('/') o simplemente recargar el artículo:
         window.location.reload();
       } catch (error) {
         console.error(error);
@@ -91,7 +81,6 @@ const ArticuloDetalle = () => {
           'Venta Anulada',
           'El artículo vuelve a estar disponible.',
         );
-        // Recargamos para ver los cambios en el badge y los botones
         window.location.reload();
       } catch (error) {
         console.error(error);
@@ -107,12 +96,15 @@ const ArticuloDetalle = () => {
       </div>
     );
   }
+
   if (!articulo) {
     return <div className="text-white">Artículo no encontrado.</div>;
   }
+
+  const estaVendido = articulo.estado === 'VENDIDO';
+
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-4 md:p-8">
-      {/* Botón Volver*/}
       <Link
         to="/"
         className="text-stitch-text-muted hover:text-stitch-primary mb-4 flex w-fit items-center gap-2 transition-colors"
@@ -122,7 +114,7 @@ const ArticuloDetalle = () => {
       </Link>
 
       <div className="bg-stitch-sidebar border-stitch-border grid grid-cols-1 gap-10 rounded-3xl border p-8 shadow-2xl lg:grid-cols-2">
-        {/* Lado Izquierdo: Imagen con contenedor Pro */}
+        {/* Lado Izquierdo: Imagen */}
         <div className="border-stitch-border bg-stitch-bg relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl border">
           {articulo.imagen ? (
             <img
@@ -184,9 +176,8 @@ const ArticuloDetalle = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              {/* Fila superior: Marcar como vendido y Editar */}
               <div className="flex flex-col gap-4 sm:flex-row">
-                {articulo.estado === 'DISPONIBLE' ? (
+                {!estaVendido ? (
                   <button
                     onClick={handleVender}
                     className="bg-stitch-primary shadow-stitch-primary/20 flex-1 rounded-xl px-8 py-4 font-bold text-white shadow-lg transition-all hover:brightness-110 active:scale-95"
@@ -194,21 +185,31 @@ const ArticuloDetalle = () => {
                     Marcar como vendido
                   </button>
                 ) : (
-                  <div className="bg-stitch-sold/20 border-stitch-sold/50 text-stitch-sold flex-1 rounded-xl border px-8 py-4 text-center font-bold">
+                  <div className="bg-stitch-sidebar border-stitch-border text-stitch-text-muted flex flex-1 items-center justify-center rounded-xl border px-8 py-4 text-center text-xs font-black tracking-widest uppercase opacity-60 shadow-inner">
                     Producto ya vendido
                   </div>
                 )}
 
-                <Link
-                  to={`/articulos/editar/${articulo.id_articulo}`}
-                  className="border-stitch-border flex-1 rounded-xl border bg-transparent px-8 py-4 text-center font-bold text-white transition-all hover:bg-white/5"
-                >
-                  Editar Articulo
-                </Link>
+                {/* Botón Editar Condicional */}
+                {!estaVendido ? (
+                  <Link
+                    to={`/articulos/editar/${articulo.id_articulo}`}
+                    className="border-stitch-border flex-1 rounded-xl border bg-transparent px-8 py-4 text-center font-bold text-white transition-all hover:bg-white/5"
+                  >
+                    Editar Artículo
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    className="bg-stitch-sidebar border-stitch-border text-stitch-text-muted flex-1 cursor-not-allowed rounded-xl border px-8 py-4 text-center font-bold opacity-50"
+                  >
+                    Editar Artículo
+                  </button>
+                )}
               </div>
 
-              {/* Fila inferior: Botón Eliminar (Ancho completo) */}
-              {articulo.estado === 'VENDIDO' ? (
+              {/* Fila inferior: Eliminar o Anular */}
+              {estaVendido ? (
                 <button
                   onClick={handleAnularVenta}
                   className="w-full rounded-xl border border-amber-500/50 bg-amber-500/10 py-4 font-bold text-amber-500 transition-all hover:bg-amber-500 hover:text-white active:scale-[0.98]"

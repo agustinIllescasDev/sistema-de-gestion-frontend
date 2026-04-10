@@ -24,7 +24,7 @@ const ArticuloForm = () => {
   const [porcentajeGanancia, setPorcentajeGanancia] = useState<number | string>(
     30,
   );
-  
+
   useEffect(() => {
     const inicializarFormulario = async () => {
       try {
@@ -105,12 +105,12 @@ const ArticuloForm = () => {
           imagen || undefined,
         );
         await Alertas.exito('¡Actualizado!', 'Cambios guardados correctamente');
+        navigate(`/articulo/${id}`); // Redirigimos al detalle tras actualizar
       } else {
         await ArticulosService.crearArticulos(dto, imagen || undefined);
         await Alertas.exito('¡Creado!', 'Artículo guardado con éxito');
+        navigate('/');
       }
-
-      navigate('/');
     } catch (error) {
       console.error(error);
       Alertas.error('Error', 'Hubo un problema al guardar el artículo');
@@ -223,7 +223,6 @@ const ArticuloForm = () => {
 
         {/* COLUMNA DERECHA: Cálculos y Guardado */}
         <div className="space-y-6">
-          {/* Agrupamos Precios en su propia card para que no flote en el aire */}
           <div className="bg-stitch-sidebar border-stitch-border space-y-6 rounded-2xl border p-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -256,7 +255,6 @@ const ArticuloForm = () => {
               </div>
             </div>
 
-            {/* Sección de Precio Sugerido más compacta y estilizada */}
             <div className="bg-stitch-primary/10 border-stitch-primary/30 rounded-xl border p-4 text-center">
               <p className="text-stitch-text-muted mb-1 text-[10px] font-bold tracking-widest uppercase">
                 Precio de venta sugerido
@@ -267,13 +265,26 @@ const ArticuloForm = () => {
             </div>
           </div>
 
-          {/* El botón de guardar queda fuera de la card de precios para dar aire */}
-          <button
-            type="submit"
-            className="bg-stitch-primary shadow-stitch-primary/20 w-full rounded-xl py-4 font-bold text-white shadow-lg transition-all hover:brightness-110 active:scale-95"
-          >
-            {isEdit ? 'Actualizar Cambios' : 'Guardar Artículo'}
-          </button>
+          {/* Agrupamos los botones de acción para mantener el espaciado */}
+          <div className="flex flex-col gap-3">
+            <button
+              type="submit"
+              className="bg-stitch-primary shadow-stitch-primary/20 w-full rounded-xl py-4 font-bold text-white shadow-lg transition-all hover:brightness-110 active:scale-95"
+            >
+              {isEdit ? 'Actualizar Cambios' : 'Guardar Artículo'}
+            </button>
+
+            {isEdit && (
+              <button
+                type="button"
+                onClick={() => navigate(`/articulo/${id}`)}
+                // Aplicamos los estilos exactos del botón de eliminar de tus capturas
+                className="w-full rounded-xl border border-red-500/30 bg-red-500/10 py-4 font-bold text-red-500 transition-all hover:bg-red-500 hover:text-white active:scale-95"
+              >
+                Cancelar Edición
+              </button>
+            )}
+          </div>
         </div>
       </form>
     </div>
