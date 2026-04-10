@@ -13,6 +13,7 @@ import {
 import { useAuth } from '../context/AuthContext.tsx';
 import ReportesService from '../services/reportes.service.ts';
 import { useSearch } from '../context/SearchContext.tsx';
+import { Link } from 'react-router-dom';
 
 interface Props {
   children: React.ReactNode;
@@ -133,11 +134,17 @@ const MainLayout = ({ children }: Props) => {
               </p>
               <ul className="space-y-1">
                 <li className="group hover:bg-stitch-primary/10 flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-all">
-                  <KeyRound
-                    size={20}
-                    className="group-hover:text-stitch-primary text-stitch-text-muted transition-colors"
-                  />
-                  <span className="font-medium">Cambiar contraseña</span>
+                  <Link
+                    to="/cambiar-password"
+                    onClick={() => setSideBarOpen(false)}
+                    className="group hover:bg-stitch-primary/10 flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-all"
+                  >
+                    <KeyRound
+                      size={20}
+                      className="group-hover:text-stitch-primary text-stitch-text-muted transition-colors"
+                    />
+                    <span className="font-medium">Cambiar contraseña</span>
+                  </Link>
                 </li>
               </ul>
             </div>
