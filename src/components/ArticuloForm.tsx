@@ -1,6 +1,6 @@
 //ArticuloForm.tsx
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'; // Importamos el hook para navegar
 import useEscapeNavigate from '../hooks/useEscapeNavigate';
 import CategoriasService from '../services/categorias.service';
@@ -32,6 +32,8 @@ const ArticuloForm = () => {
   const [porcentajeGanancia, setPorcentajeGanancia] = useState<number | string>(
     30,
   );
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     const inicializarFormulario = async () => {
@@ -77,6 +79,22 @@ const ArticuloForm = () => {
 
     inicializarFormulario();
   }, [id, isEdit]); // Se ejecutará cuando el ID de la URL cambie
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        formRef.current?.requestSubmit();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -139,6 +157,7 @@ const ArticuloForm = () => {
       </h1>
 
       <form
+        ref={formRef}
         onSubmit={handleSubmit}
         className="grid grid-cols-1 gap-8 md:grid-cols-2"
       >
