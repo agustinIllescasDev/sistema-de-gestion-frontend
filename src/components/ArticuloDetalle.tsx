@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import useEscapeNavigate from '../hooks/useEscapeNavigate';
 import ArticulosService from '../services/articulos.service';
 import type { Articulo } from '../types/articulo.type';
 import { IMAGES_URL } from '../utils/constants.ts';
@@ -8,6 +9,7 @@ import { Alertas } from '../utils/alerts';
 const ArticuloDetalle = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  useEscapeNavigate(() => navigate('/'));
 
   const [articulo, setArticulo] = useState<Articulo | null>(null);
   const [cargando, setCargando] = useState(true);

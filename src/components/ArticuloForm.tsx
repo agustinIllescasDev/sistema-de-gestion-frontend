@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'; // Importamos el hook para navegar
+import useEscapeNavigate from '../hooks/useEscapeNavigate';
 import CategoriasService from '../services/categorias.service';
 import ArticulosService from '../services/articulos.service';
 import type { Categoria } from '../types/categoria.interface.ts';
@@ -11,6 +12,7 @@ import { IMAGES_URL } from '../utils/constants.ts';
 
 const ArticuloForm = () => {
   const navigate = useNavigate(); // Instanciamos la navegación
+  useEscapeNavigate(() => navigate('/'));
 
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');

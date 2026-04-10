@@ -1,11 +1,13 @@
 // src/pages/CambiarPassword.tsx
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import useEscapeNavigate from '../hooks/useEscapeNavigate';
 import { KeyRound, ShieldAlert, CheckCircle2, ArrowLeft } from 'lucide-react';
 import AdministradoresService from '../services/administradores.service';
 
 const CambiarPassword = () => {
   const navigate = useNavigate();
+  useEscapeNavigate(() => navigate('/'));
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState<{
     tipo: 'exito' | 'error';
