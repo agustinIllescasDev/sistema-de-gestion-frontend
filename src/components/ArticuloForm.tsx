@@ -7,6 +7,7 @@ import CategoriasService from '../services/categorias.service';
 import ArticulosService from '../services/articulos.service';
 import type { Categoria } from '../types/categoria.interface.ts';
 import { Link } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { Alertas } from '../utils/alerts.ts';
 import { IMAGES_URL } from '../utils/constants.ts';
 
@@ -103,6 +104,12 @@ const ArticuloForm = () => {
     }
   };
 
+  const handleEliminarImagen = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevenir que el click llegue al input file
+    setImagen(null);
+    setPreview(null);
+  };
+
   const precioVentaSugerido =
     Number(precioBase) +
     (Number(precioBase) * Number(porcentajeGanancia)) / 100;
@@ -196,11 +203,21 @@ const ArticuloForm = () => {
               </label>
               <div className="border-stitch-border bg-stitch-bg hover:border-stitch-primary relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-4 transition-all">
                 {preview ? (
-                  <img
-                    src={preview}
-                    alt="Vista previa"
-                    className="mb-2 h-40 w-full rounded-lg object-cover"
-                  />
+                  <>
+                    <img
+                      src={preview}
+                      alt="Vista previa"
+                      className="mb-2 h-40 w-full rounded-lg object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleEliminarImagen}
+                      className="absolute top-2 right-2 z-10 bg-red-500/80 hover:bg-red-500 text-white rounded-full p-1 transition-colors"
+                      title="Eliminar imagen"
+                    >
+                      <X size={16} />
+                    </button>
+                  </>
                 ) : (
                   <div className="py-4 text-center">
                     <span className="text-stitch-text-muted text-3xl">+</span>
