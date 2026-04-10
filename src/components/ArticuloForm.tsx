@@ -12,7 +12,15 @@ import { IMAGES_URL } from '../utils/constants.ts';
 
 const ArticuloForm = () => {
   const navigate = useNavigate(); // Instanciamos la navegación
-  useEscapeNavigate(() => navigate('/'));
+  const { id } = useParams();
+  const isEdit = Boolean(id);
+  useEscapeNavigate(() => {
+    if (isEdit && id) {
+      navigate(`/articulo/${id}`);
+    } else {
+      navigate('/');
+    }
+  });
 
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -21,8 +29,6 @@ const ArticuloForm = () => {
   const [imagen, setImagen] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const { id } = useParams();
-  const isEdit = Boolean(id);
   const [porcentajeGanancia, setPorcentajeGanancia] = useState<number | string>(
     30,
   );
