@@ -8,6 +8,7 @@ import { IMAGES_URL } from '../utils/constants.ts';
 import type { Articulo } from '../types/articulo.type';
 import type { EstadoArticulo } from '../types/estado-articulo.type';
 import type { Categoria } from '../types/categoria.interface.ts';
+import CategoriaCreateModal from './CategoriaCreateModal';
 
 const Inventario = () => {
   const { searchTerm } = useSearch();
@@ -21,6 +22,7 @@ const Inventario = () => {
     useState<string>('');
   const [filtroEstado, setFiltroEstado] =
     useState<EstadoArticulo>('DISPONIBLE');
+  const [mostrarCrearCategoria, setMostrarCrearCategoria] = useState(false);
 
   const limite = 12;
 
@@ -110,11 +112,23 @@ const Inventario = () => {
           </label>
           <select
             value={categoriaSeleccionada}
-            onChange={(e) => setCategoriaSeleccionada(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value === 'CREAR') {
+                setMostrarCrearCategoria(true);
+              } else {
+                setCategoriaSeleccionada(e.target.value);
+              }
+            }}
             className="bg-stitch-background border-stitch-border focus:border-stitch-primary h-11 w-full cursor-pointer rounded-xl border px-4 text-xs font-bold text-white transition-all outline-none"
           >
             <option value="" className="bg-stitch-sidebar">
               TODAS LAS CATEGORÍAS
+            </option>
+            <option
+              value="CREAR"
+              className="bg-stitch-sidebar text-stitch-primary font-bold"
+            >
+              + AGREGAR CATEGORÍA
             </option>
             {categorias.map((cat) => (
               <option
@@ -242,6 +256,14 @@ const Inventario = () => {
           </div>
         </div>
       )}
+      <CategoriaCreateModal
+        open={mostrarCrearCategoria}
+        onClose={() => setMostrarCrearCategoria(false)}
+        onCreate={(categoria) => {
+          setCategorias((prev) => [...prev, categoria]);
+          setCategoriaSeleccionada(categoria.id_categoria.toString());
+        }}
+      />
     </div>
   );
 };

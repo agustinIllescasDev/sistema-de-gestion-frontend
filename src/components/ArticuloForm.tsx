@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { Alertas } from '../utils/alerts.ts';
 import { IMAGES_URL } from '../utils/constants.ts';
+import CategoriaCreateModal from './CategoriaCreateModal';
 
 const ArticuloForm = () => {
   const navigate = useNavigate(); // Instanciamos la navegación
@@ -33,6 +34,7 @@ const ArticuloForm = () => {
   const [porcentajeGanancia, setPorcentajeGanancia] = useState<number | string>(
     30,
   );
+  const [mostrarCrearCategoria, setMostrarCrearCategoria] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -212,7 +214,7 @@ const ArticuloForm = () => {
                     <button
                       type="button"
                       onClick={handleEliminarImagen}
-                      className="absolute top-2 right-2 z-10 bg-red-500/80 hover:bg-red-500 text-white rounded-full p-1 transition-colors"
+                      className="absolute top-2 right-2 z-10 rounded-full bg-red-500/80 p-1 text-white transition-colors hover:bg-red-500"
                       title="Eliminar imagen"
                     >
                       <X size={16} />
@@ -246,15 +248,22 @@ const ArticuloForm = () => {
               </label>
               <select
                 value={idCategoria?.toString() || ''}
-                onChange={(e) =>
-                  setIdCategoria(
-                    e.target.value === '' ? '' : Number(e.target.value),
-                  )
-                }
+                onChange={(e) => {
+                  if (e.target.value === 'CREAR') {
+                    setMostrarCrearCategoria(true);
+                  } else {
+                    setIdCategoria(
+                      e.target.value === '' ? '' : Number(e.target.value),
+                    );
+                  }
+                }}
                 required
                 className="bg-stitch-bg border-stitch-border focus:border-stitch-primary w-full cursor-pointer rounded-xl border p-3 text-white outline-none"
               >
                 <option value="">Selecciona una categoría</option>
+                <option value="CREAR" className="text-stitch-primary font-bold">
+                  + Agregar categoría
+                </option>
                 {categorias.map((cat) => (
                   <option key={cat.id_categoria} value={cat.id_categoria}>
                     {cat.nombre}
@@ -331,6 +340,14 @@ const ArticuloForm = () => {
           </div>
         </div>
       </form>
+      <CategoriaCreateModal
+        open={mostrarCrearCategoria}
+        onClose={() => setMostrarCrearCategoria(false)}
+        onCreate={(categoria) => {
+          setCategorias((prev) => [...prev, categoria]);
+          setIdCategoria(categoria.id_categoria);
+        }}
+      />
     </div>
   );
 };
