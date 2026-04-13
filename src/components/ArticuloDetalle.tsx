@@ -155,13 +155,16 @@ const ArticuloDetalle = () => {
             </span>
             {estaVendido && articulo.fecha_venta && (
               <p className="text-stitch-text-muted mt-3 text-sm font-medium">
-                Fecha de venta: <span className="text-white font-semibold">{new Date(articulo.fecha_venta).toLocaleDateString('es-AR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}</span>
+                Fecha de venta:{' '}
+                <span className="font-semibold text-white">
+                  {new Date(articulo.fecha_venta).toLocaleDateString('es-AR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
               </p>
             )}
           </div>

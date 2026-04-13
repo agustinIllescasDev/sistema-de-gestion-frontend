@@ -197,11 +197,14 @@ const Inventario = () => {
                       Sin imagen
                     </div>
                   )}
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex flex-col items-end gap-2">
                     <span
                       className={`rounded-lg px-2.5 py-1 text-[10px] font-black text-white uppercase ${art.estado === 'DISPONIBLE' ? 'bg-stitch-primary' : 'bg-red-600'}`}
                     >
                       {art.estado}
+                    </span>
+                    <span className="bg-stitch-primary/75 border-stitch-primary/90 rounded-lg border px-2 py-1 text-[9px] font-bold text-white uppercase shadow-md">
+                      CODIGO: {art.id_articulo}
                     </span>
                   </div>
                 </div>
@@ -212,6 +215,11 @@ const Inventario = () => {
                   <p className="text-stitch-text-muted mb-4 line-clamp-2 text-xs leading-relaxed font-medium">
                     {art.descripcion || 'Sin descripción disponible.'}
                   </p>
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    <span className="bg-stitch-primary/10 text-stitch-primary rounded-lg px-2.5 py-1 text-[10px] font-semibold uppercase">
+                      {art.categoria?.nombre || 'Sin categoría'}
+                    </span>
+                  </div>
                   <div className="border-stitch-border mt-auto flex items-center justify-between border-t pt-4">
                     <span className="text-xl font-black text-white">
                       ${new Intl.NumberFormat('es-AR').format(art.precio_venta)}
