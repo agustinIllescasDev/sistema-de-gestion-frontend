@@ -10,5 +10,6 @@ export interface Articulo {
   precio_base: number;
   precio_venta: number;
   deletedAt: Date | null;
+  fecha_venta?: Date | string | null;
   categoria: Categoria;
 }

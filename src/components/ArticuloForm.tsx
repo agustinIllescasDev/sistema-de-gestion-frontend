@@ -343,9 +343,19 @@ const ArticuloForm = () => {
       <CategoriaCreateModal
         open={mostrarCrearCategoria}
         onClose={() => setMostrarCrearCategoria(false)}
+        categorias={categorias}
         onCreate={(categoria) => {
           setCategorias((prev) => [...prev, categoria]);
           setIdCategoria(categoria.id_categoria);
+        }}
+        onDelete={(idCategoriaEliminada) => {
+          setCategorias((prev) =>
+            prev.filter((cat) => cat.id_categoria !== idCategoriaEliminada),
+          );
+          // Si la categoría eliminada estaba seleccionada, resetear la selección
+          if (idCategoria === idCategoriaEliminada) {
+            setIdCategoria('');
+          }
         }}
       />
     </div>

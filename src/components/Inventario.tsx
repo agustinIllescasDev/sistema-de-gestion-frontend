@@ -259,9 +259,19 @@ const Inventario = () => {
       <CategoriaCreateModal
         open={mostrarCrearCategoria}
         onClose={() => setMostrarCrearCategoria(false)}
+        categorias={categorias}
         onCreate={(categoria) => {
           setCategorias((prev) => [...prev, categoria]);
           setCategoriaSeleccionada(categoria.id_categoria.toString());
+        }}
+        onDelete={(idCategoria) => {
+          setCategorias((prev) =>
+            prev.filter((cat) => cat.id_categoria !== idCategoria),
+          );
+          // Si la categoría eliminada estaba seleccionada, resetear el filtro
+          if (categoriaSeleccionada === idCategoria.toString()) {
+            setCategoriaSeleccionada('');
+          }
         }}
       />
     </div>
