@@ -124,12 +124,15 @@ const ArticuloForm = () => {
       return;
     }
 
+    // Si 'preview' es null significa que el usuario clickeó la cruz roja.
+    // Mandamos '' para que el backend sepa que debe borrar el archivo.
     const dto = {
       nombre,
       descripcion,
       precio_base: Number(precioBase),
       porcentaje_ganancia: Number(porcentajeGanancia),
       id_categoria: Number(idCategoria),
+      imagen: preview === null ? '' : undefined,
     };
 
     try {

@@ -59,7 +59,12 @@ const ArticulosService = {
     }
 
     if (imagen) {
+      // Caso 1: Hay un archivo nuevo para subir
       formData.append('imagen', imagen);
+    } else if (dto.imagen === '') {
+      // Caso 2: El DTO tiene un string vacío (instrucción de borrar)
+      // Enviamos un string 'null' porque FormData no soporta null real
+      formData.append('imagen', 'null');
     }
 
     const response = await api.patch(`/articulos/${id}`, formData);
