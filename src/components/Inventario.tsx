@@ -128,7 +128,7 @@ const Inventario = () => {
               value="CREAR"
               className="bg-stitch-sidebar text-stitch-primary font-bold"
             >
-              + AGREGAR CATEGORÍA
+              + GESTIONAR CATEGORÍAS
             </option>
             {categorias.map((cat) => (
               <option

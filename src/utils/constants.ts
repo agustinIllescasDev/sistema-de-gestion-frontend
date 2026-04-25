@@ -1,2 +1,3 @@
-export const IMAGES_URL = 'http://localhost:3000/media/articulos/';
-export const API_URL = 'http://localhost:3000/';
+// constants.ts
+export const API_URL = import.meta.env.VITE_API_URL;
+export const IMAGES_URL = `${API_URL}media/articulos/`;

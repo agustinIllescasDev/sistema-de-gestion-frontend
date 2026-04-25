@@ -283,6 +283,7 @@ const ArticuloForm = () => {
                   Precio Base ($)
                 </label>
                 <input
+                  required
                   type="number"
                   value={precioBase}
                   onChange={(e) => {
@@ -297,6 +298,7 @@ const ArticuloForm = () => {
                   Ganancia (%)
                 </label>
                 <input
+                  required
                   type="number"
                   value={porcentajeGanancia}
                   onChange={(e) => {
