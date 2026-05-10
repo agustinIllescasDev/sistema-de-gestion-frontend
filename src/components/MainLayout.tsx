@@ -14,6 +14,7 @@ import { useAuth } from '../context/AuthContext.tsx';
 import ReportesService from '../services/reportes.service.ts';
 import { useSearch } from '../context/SearchContext.tsx';
 import { Link } from 'react-router-dom';
+import { Alertas } from '../utils/alerts';
 
 interface Props {
   children: React.ReactNode;
@@ -29,10 +30,14 @@ const MainLayout = ({ children }: Props) => {
     setSideBarOpen(false);
     try {
       const blob = await obtenerCatalogo();
-      const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(
+        new Blob([blob], { type: 'application/pdf' }),
+      );
       window.open(url, '_blank');
-    } catch (error) {
-      console.error('Error al descargar el catálogo:', error);
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+    } catch (error: any) {
+      console.error('Error catálogo:', error);
+      Alertas.error('Atención', error.message); // Muestra "No hay artículos cargados" o similar
     }
   };
 
@@ -40,10 +45,14 @@ const MainLayout = ({ children }: Props) => {
     setSideBarOpen(false);
     try {
       const blob = await obtenerReporteVentas();
-      const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(
+        new Blob([blob], { type: 'application/pdf' }),
+      );
       window.open(url, '_blank');
-    } catch (error) {
-      console.error('Error al descargar el reporte de ventas:', error);
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+    } catch (error: any) {
+      console.error('Error ventas:', error);
+      Alertas.error('Sin registros', error.message); // Muestra "No se encontraron resultados"
     }
   };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import CategoriasService from '../services/categorias.service';
 import { Alertas } from '../utils/alerts';
@@ -23,42 +23,53 @@ const CategoriaManageModal = ({
   const [cargandoCrear, setCargandoCrear] = useState(false);
   const [cargandoEliminar, setCargandoEliminar] = useState<number | null>(null);
 
-  // Desactivar scroll del body cuando el modal está abierto
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Efecto único para Foco, Scroll y Tecla Escape
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
     if (open) {
+      // Bloqueamos el scroll
       document.body.style.overflow = 'hidden';
+      // Escuchamos la tecla Escape
+      window.addEventListener('keydown', handleKeyDown);
+      // Damos foco al input
+      setTimeout(() => inputRef.current?.focus(), 100);
     } else {
       document.body.style.overflow = 'unset';
     }
 
-    // Cleanup: restaurar overflow cuando el componente se desmonte
+    // Limpieza al cerrar o desmontar
     return () => {
       document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [open]);
+  }, [open, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!nombre.trim()) {
-      Alertas.error(
-        'Nombre requerido',
-        'Por favor ingresa un nombre para la categoría',
-      );
+      Alertas.error('Nombre requerido', 'Por favor ingresa un nombre');
       return;
     }
 
     setCargandoCrear(true);
     try {
       const nuevaCategoria = await CategoriasService.crear(nombre.trim());
-      await Alertas.exito(
-        '¡Categoría creada!',
-        'La categoría se agregó correctamente',
-      );
       onCreate(nuevaCategoria);
       setNombre('');
+      // Mantenemos el foco después de crear
+      inputRef.current?.focus();
+
+      await Alertas.exito('¡Creada!', 'La categoría se agregó correctamente');
     } catch (error) {
-      console.error('Error al crear categoría:', error);
+      console.error(error);
       Alertas.error('Error', 'No se pudo crear la categoría');
     } finally {
       setCargandoCrear(false);
@@ -68,7 +79,7 @@ const CategoriaManageModal = ({
   const handleEliminar = async (categoria: Categoria) => {
     const confirmado = await Alertas.confirmar(
       '¿Eliminar categoría?',
-      `¿Estás seguro de que quieres eliminar "${categoria.nombre}"? Esta acción no se puede deshacer.`,
+      `¿Estás seguro de que quieres eliminar "${categoria.nombre}"?`,
     );
 
     if (!confirmado) return;
@@ -76,17 +87,14 @@ const CategoriaManageModal = ({
     setCargandoEliminar(categoria.id_categoria);
     try {
       await CategoriasService.eliminar(categoria.id_categoria);
+      onDelete(categoria.id_categoria);
       await Alertas.exito(
-        '¡Categoría eliminada!',
+        '¡Eliminada!',
         'La categoría se eliminó correctamente',
       );
-      onDelete(categoria.id_categoria);
     } catch (error) {
-      console.error('Error al eliminar categoría:', error);
-      Alertas.error(
-        'Error',
-        'No se pudo eliminar la categoría. Verifica que no tenga artículos asociados.',
-      );
+      console.error(error);
+      Alertas.error('Error', 'No se pudo eliminar la categoría');
     } finally {
       setCargandoEliminar(null);
     }
@@ -95,7 +103,7 @@ const CategoriaManageModal = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="bg-stitch-sidebar border-stitch-border w-full max-w-2xl rounded-2xl border p-6 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-stitch-primary text-xl font-black tracking-tighter uppercase italic">
@@ -109,11 +117,11 @@ const CategoriaManageModal = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {/* Sección de crear categoría */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {/* Crear */}
           <div className="space-y-4">
             <h3 className="text-stitch-text-muted text-sm font-bold tracking-widest uppercase">
-              Crear nueva categoría
+              Nueva categoría
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -121,12 +129,12 @@ const CategoriaManageModal = ({
                   Nombre
                 </label>
                 <input
+                  ref={inputRef}
                   type="text"
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
                   placeholder="Ej: Mesas, Sillas..."
                   className="bg-stitch-bg border-stitch-border focus:border-stitch-primary w-full rounded-xl border p-3 text-white transition-all outline-none"
-                  autoFocus
                 />
               </div>
               <button
@@ -134,20 +142,20 @@ const CategoriaManageModal = ({
                 disabled={cargandoCrear}
                 className="bg-stitch-primary shadow-stitch-primary/20 w-full rounded-xl py-3 font-bold text-white shadow-lg transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
               >
-                {cargandoCrear ? 'Creando...' : 'Crear Categoría'}
+                {cargandoCrear ? 'Creando...' : 'Crear (Enter)'}
               </button>
             </form>
           </div>
 
-          {/* Sección de lista de categorías */}
+          {/* Lista */}
           <div className="space-y-4">
             <h3 className="text-stitch-text-muted text-sm font-bold tracking-widest uppercase">
-              Categorías existentes ({categorias.length})
+              Existentes ({categorias.length})
             </h3>
-            <div className="max-h-64 space-y-2 overflow-y-auto">
+            <div className="custom-scrollbar max-h-64 space-y-2 overflow-y-auto pr-2">
               {categorias.length === 0 ? (
                 <p className="text-stitch-text-muted text-sm italic">
-                  No hay categorías creadas aún.
+                  No hay categorías.
                 </p>
               ) : (
                 categorias.map((categoria) => (
@@ -162,7 +170,6 @@ const CategoriaManageModal = ({
                       onClick={() => handleEliminar(categoria)}
                       disabled={cargandoEliminar === categoria.id_categoria}
                       className="text-red-400 transition-colors hover:text-red-300 disabled:opacity-50"
-                      title="Eliminar categoría"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -173,12 +180,12 @@ const CategoriaManageModal = ({
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-8 flex justify-end">
           <button
             onClick={onClose}
             className="border-stitch-border bg-stitch-bg hover:bg-stitch-border rounded-xl border px-6 py-3 font-bold text-white transition-all"
           >
-            Cerrar
+            Cerrar (Esc)
           </button>
         </div>
       </div>
